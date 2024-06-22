@@ -100,6 +100,34 @@ class DendriteLocator:
 
         return res
 
+    async def hover(self, expected_outcome="", *args, **kwargs) -> InteractionResponse:
+        llm_config = self.dendrite_browser.get_llm_config()
+
+        page_before = await self.dendrite_browser.get_active_page()
+        page_before_info = await page_before.get_page_information()
+
+        timeout = kwargs.pop("timeout", 2000)
+        await self.locator.hover(timeout=timeout, *args, **kwargs)
+
+        await self.wait_for_page_changes(page_before.url)
+
+        page_after = await self.dendrite_browser.get_active_page()
+        page_after_info = await page_after.get_page_information()
+        page_delta_information = PageDeltaInformation(
+            page_before=page_before_info, page_after=page_after_info
+        )
+
+        dto = MakeInteractionDTO(
+            url=page_before.url,
+            dendrite_id=self.dendrite_id,
+            interaction_type="hover",
+            expected_outcome=expected_outcome,
+            page_delta_information=page_delta_information,
+            llm_config=llm_config,
+        )
+        res = await make_interaction(dto)
+        return res
+
     async def fill(self, value: str, expected_outcome="", *args, **kwargs):
         if expected_outcome == "":
             expected_outcome = (

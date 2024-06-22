@@ -4,7 +4,7 @@ from dendrite_python_sdk.models.LLMConfig import LLMConfig
 from dendrite_python_sdk.models.PageDeltaInformation import PageDeltaInformation
 
 
-InteractionType = Literal["click", "fill"]
+InteractionType = Literal["click", "fill","hover"]
 
 
 class MakeInteractionDTO(BaseModel):
